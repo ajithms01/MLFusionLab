@@ -25,6 +25,8 @@ SECRET_KEY = 'django-insecure-h3)p5f-*!ntx30-l2zyzfmaleq5-dhmdxw@xi02zpwmie!it4s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+MEDIA_ROOT = 'models'
+
 ALLOWED_HOSTS = []
 
 
