@@ -1,4 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.conf import settings
+
 from . models import Project
 from . training_backend import train_models, best_model, train_best_model
 
@@ -84,8 +86,11 @@ def download_models(request):
     target = 'models/'
     
     shutil.move(origin, target+origin)
+
+    file_path = os.path.join(settings.MEDIA_ROOT,origin)
     
-    best_model = 'models/RFmodel.pkl'
-    response = HttpResponse(best_model, content_type='application/force-download')
-    response['Content-Disposition'] = f'attachment; filename="RFmodel.pkl"'
+    f1 = open(file_path,'rb')
+    response = HttpResponse(f1, content_type='application/force-download')
+    response['Content-Disposition'] = "attachment; filename=%s" % origin
+    
     return response
