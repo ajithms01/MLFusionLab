@@ -84,11 +84,15 @@ def MobileNetV3_small(output_classes: int):
         param.requires_grad = False
 
     mobilenet_small.classifier[3] = nn.Sequential(
-        nn.BatchNorm1d(1024),
-        nn.Linear(1024,512),
-        nn.Dropout(0.2),
-        nn.BatchNorm1d(num_features=512),
-        nn.Linear(512,output_classes)
+        nn.AdaptiveAvgPool2d(1),
+        nn.Flatten(),
+        nn.Linear(1024, 1024),
+        nn.ReLU(),
+        nn.Linear(1024, 1024),
+        nn.ReLU(),
+        nn.Linear(1024, 512),
+        nn.ReLU(),
+        nn.Linear(512, output_classes)
     )
     return mobilenet_small
 
@@ -139,12 +143,12 @@ def resnet18(output_classes: int):
         param.requires_grad = True
 
     resnet18_model.fc = nn.Sequential(
-        nn.BatchNorm1d(num_features=3024),
-        nn.Linear(3024,1024),
+        nn.BatchNorm1d(num_features=512),
+        nn.Linear(512,128),
         nn.ReLU(),
-        nn.BtchNorm1d(num_features=1024),
+        nn.BatchNorm1d(num_features=128),
         nn.Dropout(0.4),
-        nn.Linear(1024,output_classes)   
+        nn.Linear(128,output_classes)
     )
 
     return resnet18_model
