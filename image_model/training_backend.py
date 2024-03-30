@@ -99,18 +99,18 @@ def train_models(model : nn.Module , train_data : DataLoader, test_data: DataLoa
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     model.to(device)
 
-    metrics = { 'train_loss': 0.0, 'train_acc': 0.0, 'test_loss': 0.0, 'test_acc': 0.0 }
+    metrics = { 'train loss': 0.0, 'train accuracy': 0.0, 'test loss': 0.0, 'test accuracy': 0.0 }
 
     # Training Model on each epoch
     for epoch in range(epochs):
 
         # Training Step
-        metrics['train_loss'], metrics['train_acc'] = train_step(model=model, train_data=train_data, loss_fn=loss_fn, optimizer=optimizer)
+        metrics['train loss'], metrics['train accuracy'] = train_step(model=model, train_data=train_data, loss_fn=loss_fn, optimizer=optimizer)
         
         # Testing Step
-        metrics['test_loss'], metrics['test_acc'] = test_step(model=model, test_data=test_data, loss_fn=loss_fn)
+        metrics['test loss'], metrics['test accuracy'] = test_step(model=model, test_data=test_data, loss_fn=loss_fn)
 
-        model_path = os.path.join('models', save_name +".pth")
+        model_path = os.path.join('models/', save_name +".pth")
         torch.save(model.state_dict(), model_path)
 
     return metrics
