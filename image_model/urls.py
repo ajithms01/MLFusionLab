@@ -10,5 +10,6 @@ urlpatterns  = [
     path('detection/',views.detection,name='detection'),
     path('classification/',views.classify, name='classification'),
     path('segmentation/',views.segmentation, name='segmentation'),
-    path('results/',views.training,name='results')
+    path('results/',views.training,name='results'),
+    path('download_image_model/',views.download_models,name='pth_download'),
 ]
