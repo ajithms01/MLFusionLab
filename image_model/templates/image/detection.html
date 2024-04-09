@@ -2,26 +2,39 @@
 
 {% block title %} Object-Detection {% endblock title %}
 
+
 {% block content %}
 <div class="continer m-3">
   <h1>Image-Based Models</h1>
   <h3 class="display-5 text-secondary">Object-Detection</h3>
 </div>
 
-
-
 <div class="container-md">
-    <p class="fs-5 fw-semibold fst-italic">Model Specifications</p>
-    <form method="post" enctype="multipart/form-data" class="mb-3" action="/image_model/results/?pid={{pid}}">
-      {% csrf_token %}
-      <label for="pjt-id" class="form-label w-25">Project ID</label>
-      <input type="number" class="form-control w-25 " disabled value="{{pid}}">
-      <label for="target" class="form-label w-25">Target type</label>
-      <select class="form-select">
-      </select> 
-      <select name="target" id="target" class="form-select w-25">
-      </select>
-      <button type="submit" class="btn btn-primary mt-2 mb-4">Create Model</button>
-    </form>
+  <p class="fs-5 fw-semibold fst-italic">Model Specifications</p>
+  <form
+    method="post"
+    enctype="multipart/form-data"
+    class="mb-3"
+    action="/image_model/results/?pid={{pid}}&type=detection"
+  >
+    {% csrf_token %}
+    <label for="pjt-id" class="form-label w-25">Project ID</label>
+    <input type="number" class="form-control w-25" disabled value="{{pid}}" id='pjt-id'/>
+    <label for="usage" class="form-label w-25">Requirment: </label>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="usage" id="usage-realtime" value="realtime" checked>
+      <label class="form-check-label" for="usage-realtime">Realtime</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="usage" id="usage-qualitative" value="qualitative">
+      <label class="form-check-label" for="usage-qualitative">Qualitative</label>
+    </div>
+    <br>
+    <label for="classes" class="form-label w-25">Class Names</label>
+    <input type="text" class="form-control w-25" placeholder="Seperated by commas" >
+    <button type="submit" class="btn btn-primary mt-2 mb-4">
+      Create Model
+    </button>
+  </form>
 </div>
 {% endblock content %}

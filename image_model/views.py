@@ -38,12 +38,19 @@ def image(request):
     return render(request,'image/image.html')
 
 def detection(request):
+    if request.method == 'GET':
+        pid = request.GET.get('pid')
+        
+        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'tiger_dataset.zip'), 'r') as zip_ref:
+            zip_ref.extractall("data")
+
+        context = {'pid':pid}
+        return render(request,'image/detection.html',context)
     return render(request,'image/detection.html')
 
 def classify(request):
     if request.method == 'GET':
         pid = request.GET.get('pid')
-        file = request.GET.get('file')
 
         # unzipping files
         with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'tiger_dataset.zip'), 'r') as zip_ref:
@@ -139,7 +146,12 @@ def training(request):
                 metrics['Inception_v3'] = train_models(model=inception(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='Inception_v3')
                 metrics['EfficientNet_B5'] = train_models(model=effnetb5(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='EfficientNet_B5')
 
-        
+    elif operation == 'detection':
+        if request.POST.get('usage') == 'qualitative':
+            pass
+    
+    else :
+        pass
 
     return render(request,'image/results.html', context= {"metrics":metrics, "operation": operation})
 
