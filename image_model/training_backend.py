@@ -1,5 +1,6 @@
 import torch
 import os
+import gc
 from torch import nn
 
 
@@ -69,6 +70,9 @@ def train_step(model : nn.Module, train_data : DataLoader, loss_fn:torch.nn.Modu
     train_loss /= len(train_data)
     train_acc /= len(train_data)
 
+    gc.collect()
+    torch.cuda.empty_cache()
+
     return train_loss, train_acc
 
 def test_step(model, test_data, loss_fn):
@@ -91,6 +95,10 @@ def test_step(model, test_data, loss_fn):
     
     test_loss = test_loss / len(test_data)
     test_acc = test_acc / len(test_data)
+
+    gc.collect()
+    torch.cuda.empty_cache()
+
     return test_loss, test_acc
 
 def train_models(model : nn.Module , train_data : DataLoader, test_data: DataLoader, epochs: int, save_name: str):
@@ -112,5 +120,9 @@ def train_models(model : nn.Module , train_data : DataLoader, test_data: DataLoa
 
         model_path = os.path.join('models/', save_name +".pth")
         torch.save(model.state_dict(), model_path)
+
+        del model
+        gc.collect()
+        torch.cuda.empty_cache()
 
     return metrics
