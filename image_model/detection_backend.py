@@ -54,7 +54,6 @@ class CustomDataset(object):
         # ensure that they are aligned
         self.imgs = list(sorted(os.listdir("path to image folder")))
         
-        # self.labels = list(sorted(os.listdir("/kaggle/input/face-mask-detection/annotations/")))
 
     def __getitem__(self, idx):
         # load images ad masks
