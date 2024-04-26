@@ -84,7 +84,7 @@ def MobileNetV3_small(output_classes: int):
         param.requires_grad = False
 
     mobilenet_small.classifier[3] = nn.Sequential(
-        nn.AdaptiveAvgPool2d(1),
+        nn.AdaptiveAvgPool1d(1024),
         nn.Flatten(),
         nn.Linear(1024, 1024),
         nn.ReLU(),

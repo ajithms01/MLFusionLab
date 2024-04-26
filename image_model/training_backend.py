@@ -2,6 +2,7 @@ import torch
 import os
 import gc
 from torch import nn
+from tqdm.auto import tqdm
 
 
 from torchvision.datasets import ImageFolder
@@ -110,7 +111,7 @@ def train_models(model : nn.Module , train_data : DataLoader, test_data: DataLoa
     metrics = { 'train loss': 0.0, 'train accuracy': 0.0, 'test loss': 0.0, 'test accuracy': 0.0 }
 
     # Training Model on each epoch
-    for epoch in range(epochs):
+    for epoch in tqdm(range(epochs)):
 
         # Training Step
         metrics['train loss'], metrics['train accuracy'] = train_step(model=model, train_data=train_data, loss_fn=loss_fn, optimizer=optimizer)
@@ -121,8 +122,9 @@ def train_models(model : nn.Module , train_data : DataLoader, test_data: DataLoa
         model_path = os.path.join('models/', save_name +".pth")
         torch.save(model.state_dict(), model_path)
 
-        del model
         gc.collect()
         torch.cuda.empty_cache()
+    
+    del model
 
     return metrics
