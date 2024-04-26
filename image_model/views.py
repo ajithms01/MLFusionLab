@@ -8,6 +8,12 @@ from torchvision.datasets import ImageFolder
 
 from .classification_models import *
 from .training_backend import *
+from .detection_models import *
+from .segmentation_models import *
+
+from PIL import Image
+import io
+import base64
 
 
 transform = transforms.Compose([
@@ -41,7 +47,7 @@ def detection(request):
     if request.method == 'GET':
         pid = request.GET.get('pid')
         
-        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'tiger_dataset.zip'), 'r') as zip_ref:
+        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'datasets.zip'), 'r') as zip_ref:
             zip_ref.extractall("data")
 
         context = {'pid':pid}
@@ -53,7 +59,7 @@ def classify(request):
         pid = request.GET.get('pid')
 
         # unzipping files
-        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'tiger_dataset.zip'), 'r') as zip_ref:
+        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'dataset_classify.zip'), 'r') as zip_ref:
             zip_ref.extractall("data")
 
         # Getting file locations
@@ -93,6 +99,14 @@ def classify(request):
     return render(request,'image/classification.html')
 
 def segmentation(request):
+    if request.method == 'GET':
+        pid = request.GET.get('pid')
+        
+        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'dataset_drone.zip'), 'r') as zip_ref:
+            zip_ref.extractall("data")
+
+        context = {'pid':pid}
+        return render(request,'image/detection.html',context)
     return render(request,'image/segementation.html')
 
 def training(request):
@@ -109,9 +123,9 @@ def training(request):
             priority = request.POST.get('priority')
 
             if priority == 'latency':
-                metrics['MobileNet_V3_small'] = train_models(model=MobileNetV3_small(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='MobileNet_V3_small')
-                metrics['MNASet_1'] = train_models(model=mnasNet1(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='MNASet_1')
-                metrics['ShuffleNet_v2_X1'] = train_models(model=shuffnetv2_x0(output_classes=int(classes)), train_data=train_data, test_data=test_data, epochs=10, save_name='ShuffleNet_v2_X1')
+                metrics['MobileNet_V3_small'] = train_models(model=MobileNetV3_small(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=1, save_name='MobileNet_V3_small')
+                metrics['MNASet_1'] = train_models(model=mnasNet1(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=1, save_name='MNASet_1')
+                metrics['ShuffleNet_v2_X1'] = train_models(model=shuffnetv2_x0(output_classes=int(classes)), train_data=train_data, test_data=test_data, epochs=1, save_name='ShuffleNet_v2_X1')
             
             else:
                 metrics['MobileNet_V3_small'] = train_models(model=MobileNetV3_small(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='MobileNet_V3_small')
@@ -147,22 +161,74 @@ def training(request):
                 metrics['EfficientNet_B5'] = train_models(model=effnetb5(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='EfficientNet_B5')
 
     elif operation == 'detection':
-        if request.POST.get('usage') == 'qualitative':
-            pass
-    
+        # if request.POST.get('size') == 'nano':
+        #     model = yolonano()
+        #     model.train(data="data/datasets/data.yaml",epochs=20)
+        #     del model
+        # elif request.POST.get('size') == 'small':
+        #     model = yolosmall()
+        #     model.train(data="data/datasets/data.yaml",epochs=10)
+        #     del model
+        # else:
+        #     model = yolomed()
+        #     model.train(data="data/datasets/data.yaml",epochs=10)
+        #     del model
+
+        image_file =  io.BytesIO(open('runs/detect/train/confusion_matrix.png', 'rb').read())
+        image = Image.open(image_file)
+        output = io.BytesIO()
+        image.convert('RGB').save(output, 'PNG')
+        image_file = io.BytesIO(open('runs/detect/train/confusion_matrix_normalized.png', 'rb').read())
+        image1 = Image.open(image_file)
+        output2 = io.BytesIO()
+        image1.convert('RGB').save(output2, 'PNG')
+        context = {"operation": operation,
+                   "c_matrix_normalized": base64.b64encode(output.getvalue()).decode('utf-8'),
+                   "c_matrix_test": base64.b64encode(output2.getvalue()).decode('utf-8')
+                   }
+        return render(request, 'image/results.html',context=context)
     else :
-        pass
+        if request.POST.get('size') == 'nano':
+            model = segNano()
+            model.train(data="data/datasets/data.yaml",epochs=10)
+            del model
+        elif request.POST.get('size') == 'small':
+            model = segSmall()
+            model.train(data="data/datasets/data.yaml",epochs=10)
+            del model
+        else:
+            model = segMed()
+            model.train(data="data/datasets/data.yaml",epochs=10)
+            del model
+    
+        
 
     return render(request,'image/results.html', context= {"metrics":metrics, "operation": operation})
 
 def download_models(request):
-    
-    name = request.GET.get('model')
-    
-    filename = name+'.pth'
-    file_path = os.path.join(settings.MEDIA_ROOT, filename)
+    if request.GET.get('type') == 'classify':
+        name = request.GET.get('model')
+        
+        filename = name+'.pth'
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
 
-    f1 = open(file_path,'rb')
-    response = HttpResponse(f1, content_type='application/force-download')
-    response['Content-Disposition'] = "attachment; filename=%s" % filename
+        f1 = open(file_path,'rb')
+        response = HttpResponse(f1, content_type='application/force-download')
+        response['Content-Disposition'] = "attachment; filename=%s" % filename
+    elif request.GET.get('type') == 'detection':
+        
+        filename = 'best.pt'
+        file_path = os.path.join('runs/detect/train/weights', filename)
+
+        f1 = open(file_path,'rb')
+        response = HttpResponse(f1, content_type='application/force-download')
+        response['Content-Disposition'] = "attachment; filename=%s" % filename
+    else:
+        
+        filename = name+'.pth'
+        file_path = os.path.join('runs/segment/train/weights', filename)
+
+        f1 = open(file_path,'rb')
+        response = HttpResponse(f1, content_type='application/force-download')
+        response['Content-Disposition'] = "attachment; filename=%s" % filename
     return response
