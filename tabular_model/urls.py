@@ -7,5 +7,5 @@ urlpatterns = [
     path('',views.tabular,name='tabular'),
     path('regression/',views.regression,name='regression'),
     path('results/',views.training,name='training'),
-    path('download_model/',views.download_models,name='download'),
+    path('download_models/',views.download_models,name='download'),
 ]
