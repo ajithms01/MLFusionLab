@@ -2,3 +2,7 @@
     font-size: large;
     font-style: italic;
 }
+
+body {
+    background-image: url("../images/background.jpg");
+}
