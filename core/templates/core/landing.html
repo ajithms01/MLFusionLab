@@ -1,0 +1,33 @@
+{% load static %}
+ <html>
+    <head>
+        <title>Landing page</title>
+        <link rel="stylesheet" href="{% static 'css/landingstyle.css' %}">
+    </head>
+  <section class="showcase">
+    <header>
+      <h2 class="logo">MLFusion Lab</h2>
+      <div class="toggle"></div>
+    </header>
+    <video src="static\videos\landingvideo.mp4" muted loop autoplay></video>
+    <div class="overlay"></div>
+    <div class="text">
+      <h2>ML in </h2> 
+      <h3>a few clicks</h3>
+      <p>Unlocking the Potential of Tomorrow: Embark on a Journey Through the Limitless Horizons of Machine Learning</p>
+      <a href="{% url 'core:signup' %}">SIGN UP</a>
+    </div>
+    <ul class="social">
+      <li><a href="#"><img src="https://i.ibb.co/x7P24fL/facebook.png"></a></li>
+      <li><a href="#"><img src="https://i.ibb.co/Wnxq2Nq/twitter.png"></a></li>
+      <li><a href="#"><img src="https://i.ibb.co/ySwtH4B/instagram.png"></a></li>
+    </ul>
+  </section>
+  <div class="menu">
+    <ul>
+      <li><a href="{% url 'core:index' %}">Home</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+  <script src="static\js\script.js"></script>
+  </html>
