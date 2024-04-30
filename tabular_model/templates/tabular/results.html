@@ -13,6 +13,10 @@
     <p class="fs-4">After training the best model is <strong class="text-success">{{best_model}}</strong></p>
     <p class="fs-5">The Score of model is <span class="text-info fw-bold">{{score}}</span></p>
     <p class="fs-5">The Root Mean Square Error of Model is <span class="text-danger">{{rmse}}</span></p>
-    <a href="{% url: 'text_model:download_model' %}" target="_blank" class="btn btn-success"></a>
+    {% if rmse > 50000 %}
+        <p class="fs-6">Higher RMSE means your dataset is not clean (include noise and outliers). Clean your dataset before retrying</p>
+    {% endif %}
+    
+    <a href="{% url 'tabular_model:download' %}" target="_blank" class="btn btn-success">Download Model</a>
 </div>
 {% endblock content %}

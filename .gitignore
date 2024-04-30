@@ -144,3 +144,4 @@ data/*
 *.pth
 runs
 *.pt
+*.pkl
