@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Sentiment Analysis{% endblock title %}
+
+{% block content %}
+<div class="continer m-3">
+  <h1>Text-Based Models</h1>
+  <h3 class="display-5 text-secondary">Sentiment Analysis</h3>
+</div>
+
+<div class="container-md">
+  {{ df_table | safe }}
+  {% if columns %}
+  <p class="fs-5 fw-semibold fst-italic">Confirm the specifications:</p>
+  <form method="post" enctype="multipart/form-data" class="mb-3" action="/text_model/sent_results/?pid={{pid}}">
+    {% csrf_token %}
+    <label for="pjt-id" class="form-label w-25">Project ID</label>
+    <input type="number" class="form-control w-25 " disabled value="{{pid}}">
+    <label for="target" class="form-label w-25">Target attribute</label>
+    <select name="target" id="target" class="form-select w-25">
+      {% for col in columns %}
+      <option value="{{col}}">{{col}}</option>
+      {% endfor %}
+    </select>
+    <label for="target" class="form-label w-25">Text Data</label>
+    <select name="text_data" id="text_data" class="form-select w-25">
+        {% for col in columns %}
+        <option value="{{col}}">{{col}}</option>
+        {% endfor %}
+      </select>
+    <label for="num_labels" class="form-label w-25">No Of labels</label>
+    <input type="number" class="form-control w-25" name="num_labels">
+    <button type="submit" class="btn btn-primary mt-2 mb-4">Create Model</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock content %}
