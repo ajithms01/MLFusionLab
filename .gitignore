@@ -145,3 +145,4 @@ data/*
 runs
 *.pt
 *.pkl
+*.model

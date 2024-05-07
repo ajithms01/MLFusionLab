@@ -23,4 +23,5 @@ urlpatterns = [
     path('',include('core.urls')),
     path('tabular/',include('tabular_model.urls')),
     path('image_model/',include('image_model.urls')),
+    path('text_model/',include('text_model.urls')),
 ]

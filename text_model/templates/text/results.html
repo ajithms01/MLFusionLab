@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Results{% endblock %}
+
+
+{% block content %}
+<div class="container-md">
+    <h1>Results</h1>
+    <p>The model have been trained successfully</p>
+
+    <h1 class="display-4">Metrices of The Model</h1>
+    {{ output_df | safe }}
+    <p class="fs-4">After training the best model is <strong class="text-success">BERT Uncased</strong></p>
+    <p class="fs-5">The Score of model is <span class="text-info fw-bold">{{f1}}</span></p>
+    <p class="fs-5">The Loss of Model is<span class="text-danger">{{val_loss}}</span></p>
+    {% if val_loss > 1.35 %}
+        <p class="fs-6">Higher LOSS means your dataset is not clean (include noise and outliers). Clean your dataset before retrying</p>
+    {% endif %}
+    
+    <a href="{% url 'text_model:download' %}" target="_blank" class="btn btn-success">Download Model</a>
+</div>
+{% endblock content %}
