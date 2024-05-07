@@ -47,7 +47,7 @@ def detection(request):
     if request.method == 'GET':
         pid = request.GET.get('pid')
         
-        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'datasets.zip'), 'r') as zip_ref:
+        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'datasets_detect.zip'), 'r') as zip_ref:
             zip_ref.extractall("data")
 
         context = {'pid':pid}
@@ -102,11 +102,11 @@ def segmentation(request):
     if request.method == 'GET':
         pid = request.GET.get('pid')
         
-        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'dataset_drone.zip'), 'r') as zip_ref:
+        with zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT,'datasets_seg.zip'), 'r') as zip_ref:
             zip_ref.extractall("data")
 
         context = {'pid':pid}
-        return render(request,'image/detection.html',context)
+        return render(request,'image/segmentation.html',context)
     return render(request,'image/segementation.html')
 
 def training(request):
@@ -123,9 +123,9 @@ def training(request):
             priority = request.POST.get('priority')
 
             if priority == 'latency':
-                metrics['MobileNet_V3_small'] = train_models(model=MobileNetV3_small(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=1, save_name='MobileNet_V3_small')
-                metrics['MNASet_1'] = train_models(model=mnasNet1(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=1, save_name='MNASet_1')
-                metrics['ShuffleNet_v2_X1'] = train_models(model=shuffnetv2_x0(output_classes=int(classes)), train_data=train_data, test_data=test_data, epochs=1, save_name='ShuffleNet_v2_X1')
+                metrics['MobileNet_V3_small'] = train_models(model=MobileNetV3_small(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='MobileNet_V3_small')
+                metrics['MNASet_1'] = train_models(model=mnasNet1(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='MNASet_1')
+                metrics['ShuffleNet_v2_X1'] = train_models(model=shuffnetv2_x0(output_classes=int(classes)), train_data=train_data, test_data=test_data, epochs=10, save_name='ShuffleNet_v2_X1')
             
             else:
                 metrics['MobileNet_V3_small'] = train_models(model=MobileNetV3_small(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='MobileNet_V3_small')
@@ -140,7 +140,6 @@ def training(request):
 
             if priority == 'latency':
                 metrics['GoogleNet'] = train_models(model=googleNet(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='GoogleNet')
-                metrics['RegNet_Y_16GF'] = train_models(model=regnetY16gf(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='RegNet_Y_16GF')
                 metrics['ResNet18'] = train_models(model=resnet18(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='ResNet18')
             
             else:
@@ -154,25 +153,27 @@ def training(request):
             if priority == 'latency':
                 metrics['Efficient_v2_small'] = train_models(model=googleNet(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='Efficient_v2_small')
                 metrics['ResNet50'] = train_models(model=resnet_50(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10,save_name='ResNet50')
-                metrics['RegNet_Y_32GF'] = train_models(model=regnet32gf(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='RegNet_Y_32GF')
+                # metrics['Inception_v3'] = train_models(model=inception(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='Inception_v3')
+                
             
             else:
-                metrics['Inception_v3'] = train_models(model=inception(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='Inception_v3')
                 metrics['EfficientNet_B5'] = train_models(model=effnetb5(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='EfficientNet_B5')
+                metrics['RegNet_Y_32GF'] = train_models(model=regnet32gf(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='RegNet_Y_32GF')
+                metrics['RegNet_Y_16GF'] = train_models(model=regnetY16gf(output_classes=int(classes)),train_data= train_data, test_data= test_data, epochs=10, save_name='RegNet_Y_16GF')
 
     elif operation == 'detection':
-        # if request.POST.get('size') == 'nano':
-        #     model = yolonano()
-        #     model.train(data="data/datasets/data.yaml",epochs=20)
-        #     del model
-        # elif request.POST.get('size') == 'small':
-        #     model = yolosmall()
-        #     model.train(data="data/datasets/data.yaml",epochs=10)
-        #     del model
-        # else:
-        #     model = yolomed()
-        #     model.train(data="data/datasets/data.yaml",epochs=10)
-        #     del model
+        if request.POST.get('size') == 'nano':
+            model = yolonano()
+            model.train(data="data/datasets/data.yaml",epochs=10)
+            del model
+        elif request.POST.get('size') == 'small':
+            model = yolosmall()
+            model.train(data="data/datasets/data.yaml",epochs=10)
+            del model
+        else:
+            model = yolomed()
+            model.train(data="data/datasets/data.yaml",epochs=10)
+            del model
 
         image_file =  io.BytesIO(open('runs/detect/train/confusion_matrix.png', 'rb').read())
         image = Image.open(image_file)
@@ -200,6 +201,20 @@ def training(request):
             model = segMed()
             model.train(data="data/datasets/data.yaml",epochs=10)
             del model
+
+        image_file =  io.BytesIO(open('runs/segment/train/labels_correlogram.jpg', 'rb').read())
+        image = Image.open(image_file)
+        output = io.BytesIO()
+        image.convert('RGB').save(output, 'PNG')
+        image_file = io.BytesIO(open('runs/segment/train/labels.jpg', 'rb').read())
+        image1 = Image.open(image_file)
+        output2 = io.BytesIO()
+        image1.convert('RGB').save(output2, 'PNG')
+        context = {"operation": operation,
+                   "label_corr": base64.b64encode(output.getvalue()).decode('utf-8'),
+                   "label": base64.b64encode(output2.getvalue()).decode('utf-8')
+                   }
+        return render(request, 'image/results.html',context=context)
     
         
 
@@ -225,7 +240,7 @@ def download_models(request):
         response['Content-Disposition'] = "attachment; filename=%s" % filename
     else:
         
-        filename = name+'.pth'
+        filename = 'best.pth'
         file_path = os.path.join('runs/segment/train/weights', filename)
 
         f1 = open(file_path,'rb')
