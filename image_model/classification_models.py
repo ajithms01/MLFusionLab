@@ -104,7 +104,7 @@ def googleNet(output_classes : int):
     googlenet_model = models.googlenet(weights = models.GoogLeNet_Weights.DEFAULT, progress = True)
 
     for param in googlenet_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     googlenet_model.fc = nn.Sequential(
         nn.BatchNorm1d(num_features=1024),
@@ -122,7 +122,7 @@ def regnetY16gf(output_classes: int):
     regnet_model = models.regnet_y_16gf(weights = models.RegNet_Y_16GF_Weights.DEFAULT, progress = True)
 
     for param in regnet_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     regnet_model.fc = nn.Sequential(
         nn.BatchNorm1d(num_features=3024),
@@ -140,7 +140,7 @@ def resnet18(output_classes: int):
     resnet18_model = models.resnet18(weights = models.ResNet18_Weights.DEFAULT, progress = True)
 
     for param in resnet18_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     resnet18_model.fc = nn.Sequential(
         nn.BatchNorm1d(num_features=512),
@@ -158,7 +158,7 @@ def effnetb3(output_classes: int):
     effnetb3_model = models.efficientnet_b3(weights = models.EfficientNet_B3_Weights.DEFAULT, progress = True)
 
     for param in effnetb3_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     effnetb3_model.classifier[1] = nn.Sequential(
         nn.BatchNorm1d(num_features=1536),    
@@ -176,7 +176,7 @@ def densenet201(output_classes: int):
     densenet201_model = models.densenet201(weights = models.DenseNet201_Weights.DEFAULT, progress = True)
 
     for param in densenet201_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     densenet201_model.classifier = nn.Sequential(
         nn.BatchNorm1d(num_features=1920),
@@ -197,7 +197,7 @@ def effnetv2small(output_classes: int):
     effnetv2_model = models.efficientnet_v2_s(weights = models.EfficientNet_V2_S_Weights.DEFAULT, progress = True)
 
     for param in effnetv2_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     effnetv2_model.classifier[1] = nn.Sequential(
         nn.BatchNorm1d(num_features=1280),
@@ -213,19 +213,12 @@ def effnetv2small(output_classes: int):
 
 def inception(output_classes: int):
 
-    inception_model = models.inception_v3(weights = models.Inception_V3_Weights.DEFAULT, progress = True)
+    inception_model = models.inception_v3(pretrained=True, progress = True)
 
     for param in inception_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
-    inception_model.fc = nn.Sequential(
-        nn.BatchNorm1d(num_features=2048),
-        nn.Linear(2048,1024),
-        nn.ReLU(),
-        nn.BatchNorm1d(num_features=1024),
-        nn.Dropout(0.4),
-        nn.Linear(1024,output_classes)
-    )
+    inception_model.fc = nn.Linear(inception_model.fc.in_features,output_classes)
 
     return inception_model
 
@@ -234,7 +227,7 @@ def resnet_50(output_classes: int):
     resenet50_model = models.resnet50(weights = models.ResNet50_Weights.DEFAULT, progress = True)
 
     for param in resenet50_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     resenet50_model.fc = nn.Sequential(
         nn.BatchNorm1d(num_features=2048),
@@ -252,7 +245,7 @@ def regnet32gf(output_classes: int):
     regnet32gf_model = models.regnet_y_32gf(weights = models.RegNet_Y_32GF_Weights.DEFAULT, progress = True)
 
     for param in regnet32gf_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     regnet32gf_model.fc = nn.Sequential(
         nn.BatchNorm1d(num_features=3172),
@@ -271,7 +264,7 @@ def effnetb5(output_classes: int):
     effnetb5_model = models.efficientnet_b5(weights = models.EfficientNet_B5_Weights.DEFAULT, progress = True)
 
     for param in effnetb5_model.parameters():
-        param.requires_grad = True
+        param.requires_grad = False
 
     effnetb5_model.classifier[1] = nn.Sequential(
         nn.BatchNorm1d(num_features=2048),

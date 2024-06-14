@@ -61,5 +61,31 @@
     </form>
     {% endif %}
 
+    {% if operation|stringformat:"s" == 'segment' %}
+    <h2>Results after training</h2>
+
+    <h4 class="mt-5">Output</h4>
+    <div class="conatiner-lg row gap-2">
+        <div class="col col-6">
+            <p class="fs-6">Label Correlation</p>
+            <img src="data:image/png;base64,{{label_corr}}" height="450" width="600" />
+        </div>
+        <div class="col col-6">
+            <p class="fs-6">Labels Varience</p>
+            <img src="data:image/png;base64,{{label}}" height="450" width="600" />
+        </div>
+    </div>
+
+    <h3 class="mt-5">Download your Model</h3> 
+
+    <form method="post"
+    enctype="multipart/form-data"
+    class="mt-3"
+    action="/image_model/download_image_model/?type=segment">
+        {% csrf_token %}
+        <input type="submit" value="Download" class="mt-5 btn btn-success">
+    </form>
+    {% endif %}
+
 </div>
 {% endblock content %}
